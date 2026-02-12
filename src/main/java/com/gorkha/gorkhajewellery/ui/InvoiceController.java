@@ -5,6 +5,7 @@ import com.gorkha.gorkhajewellery.model.Invoice;
 import com.gorkha.gorkhajewellery.model.InvoiceItem;
 import com.gorkha.gorkhajewellery.repository.InvoiceRepository;
 import com.gorkha.gorkhajewellery.service.PdfService;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,6 +23,7 @@ import javafx.util.converter.DoubleStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
+import java.util.prefs.Preferences;
 
 @Component
 public class InvoiceController {
@@ -37,14 +39,18 @@ public class InvoiceController {
 
     // --- Table ---
     @FXML private TableView<InvoiceItem> itemTable;
-    @FXML private TableColumn<InvoiceItem, String> descCol, purityCol;
-    @FXML private TableColumn<InvoiceItem, Double> netWtCol, wastageCol, totalWeightCol, stoneCol, wagesCol, totalCol;
+    @FXML private TableColumn<InvoiceItem, String> descCol, purityCol,unitCol;
+    @FXML private TableColumn<InvoiceItem, Double> netWtCol, wastageCol, totalWtCol, stoneCol, wagesCol, totalCol;
 
     private ObservableList<InvoiceItem> items = FXCollections.observableArrayList();
+    private Preferences prefs = Preferences.userNodeForPackage(InvoiceController.class);
 
     @FXML
     public void initialize() {
         itemTable.setEditable(true);
+
+        rate22kField.setText(prefs.get("rate22k", "1340"));
+        rate24kField.setText(prefs.get("rate24k", "1430"));
 
         // 1. Text Columns (Uses Custom EditCell for String)
         descCol.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -55,6 +61,10 @@ public class InvoiceController {
         purityCol.setCellFactory(ComboBoxTableCell.forTableColumn("22K", "24K"));
         purityCol.setOnEditCommit(e -> { e.getRowValue().setPurity(e.getNewValue()); recalculateAll(); });
 
+        unitCol.setCellValueFactory(new PropertyValueFactory<>("weightUnit"));
+        unitCol.setCellFactory(ComboBoxTableCell.forTableColumn("Lal", "Tola"));
+        unitCol.setOnEditCommit(e -> { e.getRowValue().setWeightUnit(e.getNewValue()); recalculateAll(); });
+
         // 2. Number Columns (Uses Custom EditCell for Double)
         netWtCol.setCellValueFactory(new PropertyValueFactory<>("netWeightLal"));
         setupDoubleCol(netWtCol, (item, v) -> item.setNetWeightLal(v));
@@ -62,13 +72,19 @@ public class InvoiceController {
         wastageCol.setCellValueFactory(new PropertyValueFactory<>("wastageLal"));
         setupDoubleCol(wastageCol, (item, v) -> item.setWastageLal(v));
 
-        totalWeightCol.setCellValueFactory(new PropertyValueFactory<>("totalWeightLal"));
-
         stoneCol.setCellValueFactory(new PropertyValueFactory<>("stoneCost"));
         setupDoubleCol(stoneCol, (item, v) -> item.setStoneCost(v));
 
         wagesCol.setCellValueFactory(new PropertyValueFactory<>("wages"));
         setupDoubleCol(wagesCol, (item, v) -> item.setWages(v));
+
+        totalWtCol.setCellValueFactory(new PropertyValueFactory<>("displayTotalWeight"));
+        totalWtCol.setCellFactory(tc -> new TableCell<InvoiceItem, Double>() {
+            @Override protected void updateItem(Double v, boolean e) {
+                super.updateItem(v, e);
+                setText((e || v == null) ? null : String.format("%.2f", v));
+            }
+        });
 
         // Total Column (Calculated & Formatted)
         totalCol.setCellValueFactory(new PropertyValueFactory<>("lineTotal"));
@@ -193,9 +209,13 @@ public class InvoiceController {
         try {
             double r22 = parse(rate22kField.getText());
             double r24 = parse(rate24kField.getText());
+            prefs.put("rate22k", rate22kField.getText());
+            prefs.put("rate24k", rate24kField.getText());
+
             double subTotal = 0;
             for (InvoiceItem item : items) {
                 if (item.getPurity() == null) item.setPurity("22K");
+                if (item.getWeightUnit() == null) item.setWeightUnit("Lal");
                 item.calculateLineTotal(r22, r24);
                 subTotal += item.getLineTotal();
             }
@@ -231,6 +251,14 @@ public class InvoiceController {
 
         public EditCell(StringConverter<T> converter) {
             this.converter = converter;
+
+            // SINGLE CLICK EDIT: Use RunLater to ensure focus processing order
+            this.setOnMouseClicked(e -> {
+                if(!isEmpty() && !isEditing()) {
+                    // Slight delay ensures any PREVIOUS edit has time to save first
+                    Platform.runLater(() -> getTableView().edit(getIndex(), getTableColumn()));
+                }
+            });
         }
 
         @Override
@@ -240,8 +268,13 @@ public class InvoiceController {
                 createTextField();
                 setText(null);
                 setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
+                // FORCE FOCUS & CURSOR
+                Platform.runLater(() -> {
+                    if (textField != null) {
+                        textField.requestFocus();
+                        textField.positionCaret(textField.getText().length());
+                    }
+                });
             }
         }
 

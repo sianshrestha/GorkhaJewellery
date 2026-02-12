@@ -1,0 +1,55 @@
+/* 1. FORCE ROW HEIGHT & COLORS */
+.table-view {
+    -fx-fixed-cell-size: 40px; /* Keeps rows stable */
+}
+
+/* 2. Remove Blue Selection Background (Keep it White) */
+.table-row-cell:filled:selected,
+.table-row-cell:filled:selected:hover,
+.table-cell:selected,
+.table-cell:focused {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-border-color: transparent;
+}
+
+/* 3. INVISIBLE TEXT FIELD (Blends in perfectly) */
+.table-view .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-text-fill: black;
+    -fx-alignment: CENTER-LEFT;
+    -fx-pref-height: 40px; /* Slightly less than row height */
+}
+
+/* 4. INVISIBLE COMBO BOX (For Purity/Unit) */
+.table-view .combo-box-base,
+.table-view .combo-box {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+    -fx-pref-height: 40px;
+}
+
+.table-view .combo-box .cell {
+    -fx-text-fill: black;
+    -fx-padding: 0;
+}
+
+/* 5. Center Headers */
+.column-header .label {
+    -fx-alignment: CENTER;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* 6. Alignment */
+.table-cell {
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 10 0 10;
+    -fx-border-color: transparent;
+}

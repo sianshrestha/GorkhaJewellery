@@ -1,42 +1,44 @@
 package com.gorkha.gorkhajewellery;
 
+import atlantafx.base.theme.PrimerLight; // <--- NEW IMPORT
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class GorkhaJewelleryApplication extends Application {
 
-    private ConfigurableApplicationContext springContext;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+    private ConfigurableApplicationContext context;
 
     @Override
     public void init() {
-        springContext = SpringApplication.run(GorkhaJewelleryApplication.class);
+        context = new SpringApplicationBuilder(GorkhaJewelleryApplication.class).run();
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
-        // This connects Spring (Backend) to JavaFX (Frontend)
-        fxmlLoader.setControllerFactory(springContext::getBean);
+    public void start(Stage stage) throws Exception {
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+        fxmlLoader.setControllerFactory(context::getBean);
         Parent root = fxmlLoader.load();
-        primaryStage.setTitle("Gorkha Jewellery Invoice System");
-        primaryStage.setScene(new Scene(root, 1024, 768));
-        primaryStage.show();
+
+        // --- NEW: Load Custom CSS ---
+        root.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+
+        Scene scene = new Scene(root);
+        stage.setTitle("Gorkha Jewellery Invoice System");
+        stage.setScene(scene);
+        stage.show();
     }
 
     @Override
     public void stop() {
-        springContext.close();
+        context.close();
     }
 }

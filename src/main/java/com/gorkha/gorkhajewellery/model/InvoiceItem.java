@@ -1,48 +1,67 @@
 package com.gorkha.gorkhajewellery.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Data; // <--- This generates Getters/Setters automatically
 
 @Entity
-@Data
+@Data // <--- If this is missing, the table becomes Read-Only!
 public class InvoiceItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String description; // e.g., "Gold Ring"
-    private String purity;      // e.g., "22K" or "24K"
+    private String description;
+    private String purity;
+    private String weightUnit = "Lal"; // "Lal" or "Tola"
 
-    // --- The Jewelry Math Inputs ---
-    private double netWeightLal;   // User types: 42
-    private double wastageLal;     // User types: 3
+    private double netWeightLal;   // The core value
+    private double wastageLal;
+    private double wages;
+    private double stoneCost;
 
-    // --- The Financial Inputs ---
-    private double wages;          // Making charges (e.g., 85.00)
-    private double stoneCost;      // Cost of stones (if any)
+    // --- Calculated Fields ---
+    private double totalWeightLal;
+    private double totalWeightTola;
 
-    // --- Calculated Fields (Stored for History) ---
-    private double totalWeightLal; // 45 (Net + Wastage)
-    private double totalWeightTola;// 0.45 (Total Lal / 100)
-    private double lineTotal;      // The final dollar amount for this row
+    // This field allows the "Total Weight" column to show data
+    private double displayTotalWeight;
 
-    // --- The Logic ---
-    // This method runs automatically before saving to ensure math is correct
+    private double lineTotal;
+
+    /**
+     * Calculates totals based on the current unit (Lal/Tola).
+     */
     public void calculateLineTotal(double rate22k, double rate24k) {
-        // 1. Calculate Total Weight (Net + Wastage)
-        this.totalWeightLal = this.netWeightLal + this.wastageLal;
+        // 1. Normalize Net Weight to Lal for Math
+        double actualWeightInLal = this.netWeightLal;
 
-        // 2. Convert to Tola (1 Tola = 100 Lal)
+        // If user selected Tola, convert input to Lal (1 Tola = 100 Lal approx, or 11.66g)
+        // Adjust this formula if your Tola conversion is different (e.g. 11.664g)
+        // For simple math: 1 Tola = 100 Lal in many local systems,
+        // but if using standard units: 1 Tola = 11.6638 grams.
+        // Assuming 1 Tola = 100 Lal for this specific logic:
+        if ("Tola".equals(this.weightUnit)) {
+            actualWeightInLal = this.netWeightLal * 100.0;
+        }
+
+        // 2. Calculate Total Weight in Lal (Net + Wastage)
+        this.totalWeightLal = actualWeightInLal + this.wastageLal;
+
+        // 3. Set Display Weight (Convert back if unit is Tola)
+        if ("Tola".equals(this.weightUnit)) {
+            this.displayTotalWeight = this.totalWeightLal / 100.0;
+        } else {
+            this.displayTotalWeight = this.totalWeightLal;
+        }
+
+        // 4. Calculate Costs (Rate is usually per Tola or 10g depending on region)
+        // Assuming Rate is per Tola (100 Lal)
         this.totalWeightTola = this.totalWeightLal / 100.0;
 
-        // 3. Get the correct gold rate based on purity
         double selectedRate = "24K".equals(purity) ? rate24k : rate22k;
-
-        // 4. Calculate Gold Cost: (Weight in Tola * Rate)
         double goldCost = this.totalWeightTola * selectedRate;
 
-        // 5. Final Total: Gold Cost + Wages + Stones
         this.lineTotal = goldCost + this.wages + this.stoneCost;
     }
 }

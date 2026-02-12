@@ -137,7 +137,7 @@ public class PdfService {
         document.add(new Paragraph(" "));
 
         // 3. ITEMS TABLE (The "Pretty" Grid)
-        float[] cols = {0.8f, 4, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 2};
+        float[] cols = {0.8f, 4, 1.2f, 1.5f, 1.5f, 1.5f, 1.5f, 2};
         PdfPTable table = new PdfPTable(cols);
         table.setWidthPercentage(100);
         table.setHeaderRows(1);
@@ -160,9 +160,9 @@ public class PdfService {
 
             addCell(table, String.valueOf(sn++), rowColor, Element.ALIGN_CENTER);
             addCell(table, item.getDescription() + " (" + item.getPurity() + ")", rowColor, Element.ALIGN_LEFT);
-            addCell(table, String.valueOf(item.getNetWeightLal()) + " Lal", rowColor, Element.ALIGN_CENTER);
-            addCell(table, String.valueOf(item.getWastageLal()) + " Lal", rowColor, Element.ALIGN_CENTER);
-            addCell(table, String.valueOf(item.getTotalWeightLal()) + " Lal", rowColor, Element.ALIGN_CENTER);
+            addCell(table, item.getNetWeightLal() + " " + item.getWeightUnit(), rowColor, Element.ALIGN_CENTER);
+            addCell(table, item.getWastageLal() + " Lal", rowColor, Element.ALIGN_CENTER);
+            addCell(table, item.getDisplayTotalWeight() + " " + item.getWeightUnit(), rowColor, Element.ALIGN_CENTER);
             addCell(table, df.format(item.getStoneCost()), rowColor, Element.ALIGN_CENTER);
             addCell(table, df.format(item.getWages()), rowColor, Element.ALIGN_CENTER);
             addCell(table, df.format(item.getLineTotal()), rowColor, Element.ALIGN_CENTER);

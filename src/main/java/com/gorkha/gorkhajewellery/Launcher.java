@@ -1,9 +1,9 @@
 package com.gorkha.gorkhajewellery;
 
-public class Launcher {
+import javafx.application.Application;
 
+public class Launcher {
     public static void main(String[] args) {
-        // This tricks Java into loading the JavaFX libraries before starting the app
-        GorkhaJewelleryApplication.main(args);
+        Application.launch(GorkhaJewelleryApplication.class, args);
     }
 }
