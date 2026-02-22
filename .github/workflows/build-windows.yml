@@ -1,0 +1,45 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch: # Allows you to run this manually from the GitHub website
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: ./mvnw.cmd clean package -DskipTests
+
+      - name: Create Windows EXE using jpackage
+        run: |
+          jpackage ^
+            --type exe ^
+            --name "GorkhaJewellery" ^
+            --input target ^
+            --main-jar jewellery-invoice-0.0.1-SNAPSHOT.jar ^
+            --main-class org.springframework.boot.loader.launch.JarLauncher ^
+            --app-version "1.0.0" ^
+            --vendor "Gorkha Jewellery" ^
+            --win-dir-chooser ^
+            --win-shortcut ^
+            --win-menu ^
+            --dest target/dist
+          
+            # Note: If you convert your icon to .ico, you can add: --icon app-icon.ico ^
+
+      - name: Upload EXE for Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: GorkhaJewellery-Windows-Installer
+          path: target/dist/*.exe
