@@ -22,6 +22,7 @@ jobs:
         run: ./mvnw.cmd clean package -DskipTests
 
       - name: Create Windows EXE using jpackage
+        shell: cmd
         run: |
           jpackage ^
             --type exe ^
