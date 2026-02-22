@@ -27,6 +27,7 @@ public class Invoice {
     // Updated Financials
     private double rate22k;
     private double rate24k;
+    private double rateSilver;
 
     private double subTotal;       // Sum of items
     private double oldGoldAmount;  // Trade-in (Less)
@@ -42,6 +43,15 @@ public class Invoice {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "invoice_id")
     private List<InvoiceItem> items = new ArrayList<>();
+
+    // --- OLD GOLD DETAILS (Manual Entry) ---
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "invoice_old_gold_id")
+    private List<OldGoldItem> oldGoldItems = new ArrayList<>();
+
+    public void addOldGoldItem(OldGoldItem item) {
+        this.oldGoldItems.add(item);
+    }
 
     public void addItem(InvoiceItem item) {
         this.items.add(item);

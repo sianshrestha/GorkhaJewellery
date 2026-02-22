@@ -1,55 +1,163 @@
-/* 1. FORCE ROW HEIGHT & COLORS */
-.table-view {
-    -fx-fixed-cell-size: 40px; /* Keeps rows stable */
+/* ================================================================= */
+/* 1. GLOBAL STYLES & VARIABLES                                      */
+/* ================================================================= */
+* {
+    -color-primary: #800000;       /* Gorkha Maroon */
+    -color-bg: #f4f6f8;            /* Premium Light Gray Background */
+    -color-card-bg: #ffffff;       /* Pure White Cards */
+    -color-text-main: #2c3e50;
+    -color-border: #e0e0e0;
 }
 
-/* 2. Remove Blue Selection Background (Keep it White) */
-.table-row-cell:filled:selected,
-.table-row-cell:filled:selected:hover,
-.table-cell:selected,
-.table-cell:focused {
+.root {
+    -fx-background-color: -color-bg;
+    -fx-font-family: 'Roboto', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* ================================================================= */
+/* 2. CARDS & LAYOUT                                                 */
+/* ================================================================= */
+.card {
+    -fx-background-color: -color-card-bg;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 4);
+    -fx-padding: 20;
+}
+
+/* ================================================================= */
+/* 3. STANDARD INPUTS (Old Gold, Name, Address, etc.)                */
+/* This preserves the "Pink" focus you want for the form fields.     */
+/* ================================================================= */
+.text-field {
     -fx-background-color: white;
-    -fx-text-fill: black;
-    -fx-border-color: transparent;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 8;
 }
 
-/* 3. INVISIBLE TEXT FIELD (Blends in perfectly) */
-.table-view .text-field {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-border-width: 0;
-    -fx-padding: 0;
-    -fx-text-fill: black;
-    -fx-alignment: CENTER-LEFT;
-    -fx-pref-height: 40px; /* Slightly less than row height */
+/* When clicking Name/Address/Old Gold -> Turn Pink & Maroon Border */
+.text-field:focused {
+    -fx-border-color: -color-primary;
+    -fx-background-color: #fffbfc; /* The Pink Tint you like */
 }
 
-/* 4. INVISIBLE COMBO BOX (For Purity/Unit) */
-.table-view .combo-box-base,
-.table-view .combo-box {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
-    -fx-alignment: CENTER;
-    -fx-pref-height: 40px;
+/* Validation Error State */
+.text-field.error {
+    -fx-border-color: #e74c3c;
+    -fx-background-color: #fdf2f2;
 }
 
-.table-view .combo-box .cell {
-    -fx-text-fill: black;
-    -fx-padding: 0;
-}
-
-/* 5. Center Headers */
-.column-header .label {
-    -fx-alignment: CENTER;
+/* ================================================================= */
+/* 4. BUTTONS                                                        */
+/* ================================================================= */
+.button {
+    -fx-cursor: hand;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-background-radius: 4px;
+    -fx-padding: 8 16;
 }
 
-/* 6. Alignment */
+.btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+}
+.btn-primary:hover { -fx-background-color: #a00000; -fx-effect: dropshadow(gaussian, rgba(128,0,0,0.4), 10, 0, 0, 2); }
+
+.btn-secondary {
+    -fx-background-color: white;
+    -fx-border-color: -color-border;
+    -fx-text-fill: -color-text-main;
+}
+.btn-secondary:hover { -fx-background-color: #f9f9f9; -fx-border-color: #bbb; }
+
+.btn-danger {
+    -fx-background-color: white;
+    -fx-border-color: #e74c3c;
+    -fx-text-fill: #e74c3c;
+}
+.btn-danger:hover { -fx-background-color: #e74c3c; -fx-text-fill: white; }
+
+/* ================================================================= */
+/* 5. TABLE VIEW (SPECIFIC OVERRIDES)                                */
+/* Here we turn OFF the styling for the table inputs.                */
+/* ================================================================= */
+
+/* A. Table Structure */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-fixed-cell-size: 40px;
+    /* Remove default column lines, we only want row lines */
+    -fx-table-cell-border-color: transparent;
+}
+
+/* --- NEW: ADD ROW SEPARATOR LINE --- */
+/* This ensures every row has a grey line at the bottom */
+.table-view .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.table-view .table-column {
+    -fx-border-color: transparent;
+}
+
 .table-cell {
     -fx-alignment: CENTER-LEFT;
-    -fx-padding: 0 10 0 10;
+    -fx-padding: 0 15;
     -fx-border-color: transparent;
+    -fx-text-fill: -color-text-main;
+}
+
+/* B. ROW SELECTION - FORCE WHITE (Not Pink) & KEEP LINE */
+.table-view .table-row-cell:filled:selected,
+.table-view .table-row-cell:filled:selected:hover,
+.table-view .table-cell:selected,
+.table-view .table-cell:focused {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    /* IMPORTANT: Maintain the separator line here too */
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-table-cell-border-color: transparent;
+}
+
+/* C. EDITING INSIDE TABLE - MAKE IT INVISIBLE */
+/* We target .table-view .text-field specifically to override the global style */
+.table-view .text-field {
+    -fx-background-color: transparent; /* Transparent, NOT white */
+    -fx-background-insets: 0;
+    -fx-border-width: 0;               /* No borders */
+    -fx-border-color: transparent;
+    -fx-padding: 0;                    /* Text aligns perfectly */
+    -fx-text-fill: black;
+    -fx-alignment: CENTER-LEFT;
+}
+
+/* Remove the "Pink" focus style just for the Table */
+.table-view .text-field:focused {
+    -fx-background-color: transparent; /* Keep transparent */
+    -fx-border-color: transparent;     /* No border */
+    -fx-effect: null;                  /* No glow */
+}
+
+/* D. Combo Box inside Table */
+.table-view .combo-box-base, .table-view .combo-box {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
 }

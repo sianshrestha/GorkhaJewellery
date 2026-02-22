@@ -18,21 +18,13 @@
 
         <HBox alignment="CENTER_LEFT" spacing="20.0">
             <VBox>
-                <Text text="GORKHA JEWELLERY" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold; -fx-fill: #800000; -fx-font-size: 28px;"/>
-                <Text text="Invoice System" style="-fx-fill: gray; -fx-font-size: 14px;"/>
+                <Text text="GURKHA JEWELLERY" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold; -fx-fill: #800000; -fx-font-size: 28px;"/>
             </VBox>
 
             <Region HBox.hgrow="ALWAYS" />
 
             <HBox spacing="15" alignment="CENTER_RIGHT">
                 <Button text="Sales History" onAction="#onViewHistory" styleClass="accent"/>
-
-                <VBox alignment="CENTER_RIGHT" spacing="5">
-                    <HBox spacing="10" alignment="CENTER_RIGHT">
-                        <Label text="Sold By:" style="-fx-font-weight: bold;"/>
-                        <TextField fx:id="soldByField" promptText="Staff Name" prefWidth="120"/>
-                    </HBox>
-                </VBox>
             </HBox>
         </HBox>
 
@@ -53,6 +45,9 @@
 
             <Label text="Gold Rate (24K):" GridPane.columnIndex="4" GridPane.rowIndex="1" style="-fx-text-fill: #800000; -fx-font-weight: bold;"/>
             <TextField fx:id="rate24kField" text="1430" prefWidth="100" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
+
+            <Label text="Silver Rate:" GridPane.columnIndex="6" GridPane.rowIndex="0" style="-fx-text-fill: #800000; -fx-font-weight: bold;"/>
+            <TextField fx:id="rateSilverField" text="150" prefWidth="100" GridPane.columnIndex="7" GridPane.rowIndex="0"/>
         </GridPane>
     </VBox>
 </top>
@@ -64,11 +59,13 @@
             <columns>
                 <TableColumn fx:id="descCol" text="Particulars" minWidth="150" style="-fx-alignment: CENTER-LEFT"/>
 
-                <TableColumn fx:id="purityCol" text="Purity" minWidth="60" style="-fx-alignment: CENTER"/>
-                <TableColumn fx:id="unitCol" text="Unit" minWidth="60" style="-fx-alignment: CENTER"/>
+                <TableColumn fx:id="purityCol" text="Purity" minWidth="60" style="-fx-alignment: CENTER-LEFT"/>
+                <TableColumn fx:id="unitCol" text="Unit" minWidth="60" style="-fx-alignment: CENTER-LEFT"/>
 
                 <TableColumn fx:id="netWtCol" text="Net Weight" style="-fx-alignment: CENTER-LEFT"/>
-                <TableColumn fx:id="wastageCol" text="Wastage" style="-fx-alignment: CENTER-LEFT"/>
+
+                <TableColumn fx:id="wastageUnitCol" text="Unit"/>
+                <TableColumn fx:id="wastageCol" text="Wastage" minWidth="60" style="-fx-alignment: CENTER-LEFT"/>
 
                 <TableColumn fx:id="totalWtCol" text="Total Weight" style="-fx-alignment: CENTER-LEFT"/>
 
@@ -77,10 +74,6 @@
                 <TableColumn fx:id="totalCol" text="Amount ($)" style="-fx-font-weight: bold; -fx-alignment: CENTER-RIGHT"/>
             </columns>
         </TableView>
-
-        <HBox spacing="10">
-            <Button text="+ Add New Item" onAction="#addEmptyRow" styleClass="button-outlined"/>
-        </HBox>
     </VBox>
 </center>
 
@@ -88,9 +81,9 @@
     <VBox style="-fx-background-color: -color-bg-subtle; -fx-padding: 25; -fx-background-radius: 10; -fx-border-color: lightgray; -fx-border-radius: 10;">
         <HBox spacing="50" alignment="TOP_RIGHT">
 
-            <VBox spacing="15" alignment="BOTTOM_LEFT" HBox.hgrow="ALWAYS">
-                <Label text="Actions" style="-fx-font-weight: bold; -fx-text-fill: gray;"/>
-                <HBox spacing="15">
+            <VBox spacing="15" alignment="TOP_LEFT" HBox.hgrow="ALWAYS">
+                <Button text="+ Add New Item" onAction="#addEmptyRow" styleClass="button-outlined"/>
+                <HBox spacing="15" alignment="BOTTOM_LEFT">
                     <Button text="Start New Invoice" onAction="#onNewInvoice" styleClass="danger" style="-fx-font-size: 16px; -fx-padding: 10 30;"/>
                     <Region prefWidth="20"/>
                     <Button text="SAVE &amp; PRINT" onAction="#onSaveAndPrint" styleClass="success" style="-fx-font-size: 16px; -fx-padding: 10 30;"/>
@@ -107,7 +100,10 @@
                 <Label fx:id="subTotalLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
                 <Label text="Old Gold ($):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextField fx:id="oldGoldField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <HBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                    <TextField fx:id="oldGoldField" editable="false" prefWidth="80" style="-fx-background-color: #f4f4f4; -fx-text-fill: gray;"/>
+                    <Button text="Add/Edit" onAction="#openOldGoldPopup" styleClass="button-outlined" prefWidth="70"/>
+                </HBox>
 
                 <Label text="Discount ($):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                 <TextField fx:id="discountField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
