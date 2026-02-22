@@ -1,7 +1,7 @@
 name: Build Windows EXE
 
 on:
-  workflow_dispatch: # Allows you to run this manually from the GitHub website
+  workflow_dispatch: 
 
 jobs:
   build-windows:
@@ -37,8 +37,6 @@ jobs:
             --win-menu ^
             --dest target/dist
           
-            # Note: If you convert your icon to .ico, you can add: --icon app-icon.ico ^
-
       - name: Upload EXE for Download
         uses: actions/upload-artifact@v4
         with:
